@@ -52,13 +52,11 @@ function injectStyles() {
 // AI CALL — sends a message to Claude and returns the text response
 // ─────────────────────────────────────────────
 async function callClaude(systemPrompt, userMessage, maxTokens = 900) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/assess", {
     method: "POST",
     headers: {
-  "Content-Type": "application/json",
-  "x-api-key": import.meta.env.VITE_ANTHROPIC_KEY,
-},
-
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: maxTokens,
@@ -69,6 +67,7 @@ async function callClaude(systemPrompt, userMessage, maxTokens = 900) {
   const data = await res.json();
   return data.content?.map((b) => b.text || "").join("") || "";
 }
+
 
 // ─────────────────────────────────────────────
 // SHARED UI COMPONENTS
