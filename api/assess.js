@@ -1,10 +1,8 @@
 module.exports = async function handler(req, res) {
-  // Only accept POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Check the API key exists before even trying
   const apiKey = process.env.ANTHROPIC_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "API key not configured" });
@@ -21,17 +19,15 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify(req.body),
     });
 
-    // If Anthropic returns an error status, capture and return it
-    if (!response.ok) {
-      const errorData = await response.json();
-      return res.status(response.status).json({ 
-        error: "Anthropic API error", 
-        details: errorData 
-      });
-    }
-
     const data = await response.json();
-    res.status(200).json(data);
+    
+    // Return the FULL response so we can see exactly what Anthropic sends back
+    // This includes any error messages from Anthropic's side
+    res.status(200).json({
+      status: response.status,
+      ok: response.ok,
+      data: data
+    });
 
   } catch (error) {
     res.status(500).json({ 
